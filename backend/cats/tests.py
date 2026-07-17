@@ -6,13 +6,13 @@ from rest_framework.test import APIClient
 
 
 class CatsAPITestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.user = User.objects.create_user(username='auth_user')
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
-    def test_list_exists(self):
-        """Проверка доступности списка задач."""
+    def test_list_exists(self) -> None:
+        """Verify the cat list endpoint is reachable and returns 200 OK."""
         response = self.client.get('/api/cats/')
         self.assertEqual(response.status_code, HTTPStatus.OK)

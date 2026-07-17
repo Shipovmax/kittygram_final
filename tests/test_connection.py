@@ -14,22 +14,21 @@ def _get_validated_link(
 ) -> str:
     _, path_to_deploy_info_file = deploy_file_info
     assert link_key in deploy_info_file_content, (
-        f'Убедитесь, что файл `{path_to_deploy_info_file}` содержит ключ '
+        f'Make sure file `{path_to_deploy_info_file}` contains the key '
         f'`{link_key}`.'
     )
     link: str = deploy_info_file_content[link_key]
     assert link.startswith('https'), (
-        f'Убедитесь, что cсылка ключ `{link_key}` в файле '
-        f'`{path_to_deploy_info_file}` содержит ссылку, которая начинается с '
-        'префикса `https`.'
+        f'Make sure the link for key `{link_key}` in file '
+        f'`{path_to_deploy_info_file}` starts with the `https` prefix.'
     )
     link_pattern = re.compile(
         r'^https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.'
         r'[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$'
     )
     assert link_pattern.match(link), (
-        f'Убедитесь, что ключ `{link_key}` в файле '
-        f'`{path_to_deploy_info_file}` содержит корректную ссылку.'
+        f'Make sure key `{link_key}` in file '
+        f'`{path_to_deploy_info_file}` contains a valid link.'
     )
     return link.rstrip('/')
 
@@ -39,16 +38,16 @@ def _make_safe_request(link: str, stream: bool = False) -> requests.Response:
         response = requests.get(link, stream=stream, timeout=15)
     except requests.exceptions.SSLError:
         raise AssertionError(
-            f'Убедитесь, что настроили шифрование для `{link}`.'
+            f'Make sure encryption is configured for `{link}`.'
         )
     except requests.exceptions.ConnectionError:
         raise AssertionError(
-            f'Убедитесь, что URL `{link}` доступен.'
+            f'Make sure URL `{link}` is reachable.'
         )
     expected_status = HTTPStatus.OK
     assert response.status_code == expected_status, (
-        f'Убедитесь, что GET-запрос к `{link}` возвращает ответ со статусом '
-        f'{int(expected_status)}.'
+        f'Make sure a GET request to `{link}` returns a response with '
+        f'status {int(expected_status)}.'
     )
     return response
 
@@ -70,8 +69,7 @@ def test_link_connection(
     cats_project_name = 'Kittygram'
     taski_project_name = 'Taski'
     assert_msg_template = (
-        f'Убедитесь, что по ссылке `{link}` доступен проект '
-        '`{project_name}`.'
+        f'Make sure project `{{project_name}}` is available at link `{link}`.'
     )
     if link_key == 'kittygram_domain':
         assert cats_project_name in response.text, (
@@ -84,7 +82,7 @@ def test_link_connection(
         js_link = _get_js_link(response)
         assert js_link, assert_msg
         try:
-            taski_response = requests.get(f'{link}/{js_link}')
+            taski_response = requests.get(f'{link}/{js_link}', timeout=15)
         except requests.exceptions.ConnectionError:
             raise AssertionError(assert_msg)
         assert taski_response.status_code == HTTPStatus.OK, assert_msg
@@ -107,8 +105,9 @@ def test_projects_on_same_ip(
         for response in responses
     ]
     assert ips[0] == ips[1], (
-        'Убедитесь, что оба проекта развернуты на одном сервере. В ходе '
-        'проверки обнаружено, что проекты размещены на разных ip-адресах.'
+        'Make sure both projects are deployed on the same server. The '
+        'check found that the projects are hosted on different IP '
+        'addresses.'
     )
 
 
@@ -123,13 +122,13 @@ def test_kittygram_static_is_available(
 
     js_link = _get_js_link(response)
     assert js_link, (
-        'Проверьте, что проект `Kittygram` настроен корректно. '
-        f'В ответе на запрос к `{link}` не обнаружена ссылка на '
-        'JavaScript-файл.'
+        'Check that project `Kittygram` is configured correctly. '
+        f'No link to a JavaScript file was found in the response to '
+        f'`{link}`.'
     )
 
-    assert_msg = 'Убедитесь, что статические файлы для `Kittygram` доступны.'
-    js_link_response = requests.get(f'{link}/{js_link}')
+    assert_msg = 'Make sure static files for `Kittygram` are available.'
+    js_link_response = requests.get(f'{link}/{js_link}', timeout=15)
     expected_status = HTTPStatus.OK
     assert js_link_response.status_code == expected_status, assert_msg
 
@@ -147,14 +146,14 @@ def test_kittygram_api_available(
         'password': ''
     }
     assert_msg = (
-        'Убедитесь, что API проекта `Kittygram` доступен по ссылке формата '
-        f'`{link}/api/...`.'
+        f'Make sure the `Kittygram` API is available at a link of the '
+        f'form `{link}/api/...`.'
     )
     try:
         response = requests.post(signup_link, data=form_data, timeout=15)
     except requests.exceptions.SSLError:
         raise AssertionError(
-            f'Убедитесь, что настроили шифрование для `{link}`.'
+            f'Make sure encryption is configured for `{link}`.'
         )
     except requests.ConnectionError:
         raise AssertionError(assert_msg)
@@ -164,7 +163,7 @@ def test_kittygram_api_available(
         response_data = response.json()
     except json.JSONDecodeError:
         raise AssertionError(
-            f'Убедитесь, что ответ на запрос к `{signup_link}` содержит '
-            'данные в формате JSON.'
+            f'Make sure the response to `{signup_link}` contains '
+            'data in JSON format.'
         )
     assert 'password' in response_data, assert_msg

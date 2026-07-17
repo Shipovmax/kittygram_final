@@ -10,7 +10,7 @@ def _get_dockerhub_username(
         dockerhub_username_key) -> str:
     _, relative_path = deploy_file_info
     assert dockerhub_username_key in deploy_info_file_content, (
-        f'Убедитесь, что файл `{relative_path}` содержит ключ '
+        f'Make sure file `{relative_path}` contains the key '
         f'`{dockerhub_username_key}`.'
     )
     return deploy_info_file_content[dockerhub_username_key]
@@ -36,8 +36,9 @@ def test_dockerhub_images_exist(
             username=docker_hub_username,
             image=image
         )
-        response = requests.get(link)
+        response = requests.get(link, timeout=10)
         assert response.status_code == expected_status_code, (
-            'Убедитесь, что в вашем DockerHub-аккаунте доступен образ '
-            f'`{image}`. Образ должен быть публичным.'
+            'Make sure image '
+            f'`{image}` is available in your DockerHub account. '
+            'The image must be public.'
         )

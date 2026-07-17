@@ -1,6 +1,6 @@
-### Как запустить проект:
+### How to run the project:
 
-Клонировать репозиторий и перейти в него в командной строке:
+Clone the repository and change into it on the command line:
 
 ```
 git clone https://github.com/yandex-praktikum/kittygram_backend.git
@@ -10,19 +10,19 @@ git clone https://github.com/yandex-praktikum/kittygram_backend.git
 cd kittygram_backend
 ```
 
-Cоздать и активировать виртуальное окружение:
+Create and activate a virtual environment:
 
 ```
 python3 -m venv env
 ```
 
-* Если у вас Linux/macOS
+* If you're on Linux/macOS
 
     ```
     source env/bin/activate
     ```
 
-* Если у вас windows
+* If you're on Windows
 
     ```
     source env/scripts/activate
@@ -32,19 +32,19 @@ python3 -m venv env
 python3 -m pip install --upgrade pip
 ```
 
-Установить зависимости из файла requirements.txt:
+Install dependencies from requirements.txt:
 
 ```
 pip install -r requirements.txt
 ```
 
-Выполнить миграции:
+Run migrations:
 
 ```
 python3 manage.py migrate
 ```
 
-Запустить проект:
+Start the project:
 
 ```
 python3 manage.py runserver

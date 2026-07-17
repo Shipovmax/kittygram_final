@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import base64
 import datetime as dt
+from typing import Any
 
 import webcolors
 from django.core.files.base import ContentFile
@@ -9,14 +12,23 @@ from .models import Achievement, AchievementCat, Cat
 
 
 class Hex2NameColor(serializers.Field):
-    def to_representation(self, value):
+    """Custom DRF field converting a hex colour string to its CSS name.
+
+    On read, the stored CSS name is returned as-is. On write, an incoming
+    hex value (e.g. ``#ff0000``) is resolved to the closest exact CSS
+    colour name via ``webcolors``; unmatched hex values are rejected.
+    """
+
+    def to_representation(self, value: str) -> str:
         return value
 
-    def to_internal_value(self, data):
+    def to_internal_value(self, data: str) -> str:
         try:
             data = webcolors.hex_to_name(data)
-        except ValueError:
-            raise serializers.ValidationError('Для этого цвета нет имени')
+        except ValueError as exc:
+            raise serializers.ValidationError(
+                'No matching CSS name for this colour'
+            ) from exc
         return data
 
 
@@ -29,7 +41,14 @@ class AchievementSerializer(serializers.ModelSerializer):
 
 
 class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
+    """Accepts an image either as a multipart upload or as a base64 data URI.
+
+    A ``data:image/<ext>;base64,<payload>`` string is decoded into a
+    ``ContentFile`` before delegating to the standard ``ImageField``
+    validation/handling.
+    """
+
+    def to_internal_value(self, data: Any) -> Any:
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
             ext = format.split('/')[-1]
@@ -57,30 +76,30 @@ class CatSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('owner',)
 
-    def get_image_url(self, obj):
+    def get_image_url(self, obj: Cat) -> str | None:
         if obj.image:
             return obj.image.url
         return None
 
-    def get_age(self, obj):
+    def get_age(self, obj: Cat) -> int:
         return dt.datetime.now().year - obj.birth_year
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict[str, Any]) -> Cat:
         if 'achievements' not in self.initial_data:
             cat = Cat.objects.create(**validated_data)
             return cat
         achievements = validated_data.pop('achievements')
         cat = Cat.objects.create(**validated_data)
         for achievement in achievements:
-            current_achievement, status = Achievement.objects.get_or_create(
-                **achievement
+            current_achievement, _created = (
+                Achievement.objects.get_or_create(**achievement)
             )
             AchievementCat.objects.create(
                 achievement=current_achievement, cat=cat
             )
         return cat
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Cat, validated_data: dict[str, Any]) -> Cat:
         instance.name = validated_data.get('name', instance.name)
         instance.color = validated_data.get('color', instance.color)
         instance.birth_year = validated_data.get(
@@ -95,8 +114,8 @@ class CatSerializer(serializers.ModelSerializer):
         achievements_data = validated_data.pop('achievements')
         lst = []
         for achievement in achievements_data:
-            current_achievement, status = Achievement.objects.get_or_create(
-                **achievement
+            current_achievement, _created = (
+                Achievement.objects.get_or_create(**achievement)
             )
             lst.append(current_achievement)
         instance.achievements.set(lst)

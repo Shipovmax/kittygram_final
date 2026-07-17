@@ -122,6 +122,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            Workflow успешно завершен.
-            Репозиторий: ${{ github.repository }}
-            Коммит: ${{ github.sha }}
+            Workflow completed successfully.
+            Repository: ${{ github.repository }}
+            Commit: ${{ github.sha }}
