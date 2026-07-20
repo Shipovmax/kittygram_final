@@ -8,7 +8,8 @@
 .container {
   position: relative;
   border-radius: var(--button-border-radius);
-  box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.03),
+  box-shadow:
+    0px 100px 80px rgba(0, 0, 0, 0.03),
     0px 30px 24px rgba(119, 119, 119, 0.04),
     0px 12px 10px rgba(119, 119, 119, 0.03),
     0px 4px 3px rgba(119, 119, 119, 0.02);

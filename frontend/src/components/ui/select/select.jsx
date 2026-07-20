@@ -23,7 +23,7 @@ export const Select = ({
   const [text, setText] = React.useState(userAchievements || "Достижения");
   const [achievementsArr, setAchievementsArr] = React.useState([]);
   const [achievementsArrToSearch, setAchievementsArrToSearch] = React.useState(
-    []
+    [],
   );
   const [isPopupOpen, setIsPopupOpen] = React.useState(false);
   const [newAchievement, setNewAchievement] = React.useState("");
@@ -79,8 +79,8 @@ export const Select = ({
   const handleSearch = (e) => {
     setAchievementsArr(
       achievementsArrToSearch.filter(
-        (x) => x.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1
-      )
+        (x) => x.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1,
+      ),
     );
   };
 

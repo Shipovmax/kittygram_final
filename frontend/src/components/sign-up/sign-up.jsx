@@ -63,7 +63,7 @@ export const SignUp = ({ extraClass = "" }) => {
             setErrorLogin("Пользователь с таким именем уже зарегистрирован");
           } else if (typeof err.password === "object") {
             setErrorPassword(
-              "Пароль должен содержать минимум 8 символов и не состоять полностью из цифр"
+              "Пароль должен содержать минимум 8 символов и не состоять полностью из цифр",
             );
           } else {
             setErrorDoublePassword("Ошибка сервера");

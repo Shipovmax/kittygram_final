@@ -11,6 +11,6 @@ export const Modal = ({ children, onClose, extraClass = "" }) => {
       <div className={`${styles.content} ${extraClass}`}>{children}</div>
       <div className={styles.overlay} onClick={onClose} />
     </>,
-    modalRoot
+    modalRoot,
   );
 };
